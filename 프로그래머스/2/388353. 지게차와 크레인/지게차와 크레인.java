@@ -7,7 +7,6 @@ import java.util.Queue;
 class Solution {
     private final static int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
     public int solution(String[] storage, String[] requests) {
-        int answer = 0;
 
         char[][] house = changeArr(storage);
 
@@ -19,10 +18,10 @@ class Solution {
                     removeForCar(req,house);
                     break;
                 case 2:
-                    remveForCrain(req,house);
+                    removeForCrain(req,house);
             }
         }
-        
+
         return countBlock(house);
 
     }
@@ -37,7 +36,7 @@ class Solution {
         return cnt;
     }
 
-    private void remveForCrain(char req, char[][] house) {
+    private void removeForCrain(char req, char[][] house) {
         for(int i = 0; i<house.length; i++){
             for(int j = 0; j<house[0].length; j++){
                 if(house[i][j] == req) house[i][j] = '*';
@@ -47,7 +46,7 @@ class Solution {
 
     private void removeForCar(char req, char[][] house) {
         List<int[]> removedList = new ArrayList<>();
-        
+
         boolean[][] visited = new boolean[house.length][house[0].length];
         Queue<int[]> q = new LinkedList<>();
         q.offer(new int[]{0, 0});
@@ -57,16 +56,16 @@ class Solution {
             for(int[] dir : dirs) {
                 int cx = cur[0] + dir[0];
                 int cy = cur[1] + dir[1];
-                
+
                 if(cx < 0 || cx >= house.length || cy < 0 || cy >= house[0].length) continue;
                 if(visited[cx][cy]) continue;
-                
+
                 visited[cx][cy] = true;
                 if(house[cx][cy] == req) removedList.add(new int[]{cx, cy});
                 if(house[cx][cy] == '*') q.offer(new int[]{cx, cy});
             }
         }
-        
+
         for(int[] removed : removedList) house[removed[0]][removed[1]] = '*';
     }
 
