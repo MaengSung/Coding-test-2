@@ -24,33 +24,26 @@ public class Main{
             boolean snake = false;
             for(int i = 0; i < input.length(); i++){
                 char cur = input.charAt(i);
-                int type = cur - 'A';
                 //비정상
                 //대문자인 경우
-                if(type >= 0 && type <= 25){
+                if(Character.isUpperCase(cur)){
                     System.out.println("Error!");
                     return;
                 }
-                //앞 뒤가 _ 인 경우
-                if((i == 0 || i == input.length() -1) && type == 30) {
-                    System.out.println("Error!");
-                    return;
-                }
-                //연속적으로 _인 경우
-                if(snake && type == 30){
+                //앞 뒤가 _ 인 경우, 연속적으로 _인 경우
+                if(input.startsWith("_") || input.endsWith("_") || input.contains("__")) {
                     System.out.println("Error!");
                     return;
                 }
                 //정상
                 //_인 경우
-                if(type == 30){
+                if(cur == '_'){
                     snake = true;
                     continue;
                 }
-
                 if(!snake) sb.append(cur);
                 if(snake){
-                    sb.append(String.valueOf(cur).toUpperCase());
+                    sb.append(Character.toUpperCase(cur));
                     snake = false;
                 }
             }
@@ -58,28 +51,19 @@ public class Main{
         if(!C){
             for(int i = 0; i < input.length(); i++){
                 char cur = input.charAt(i);
-                int type = cur - 'A';
-
-                //비정상
-                //_가 들어간 경우
-                if(cur == '_'){
-                    System.out.println("Error!");
-                    return;
-                }
                 //대문자가 맨 앞에 온 경우
-                if(type >= 0 && type <= 25){
+                if(Character.isUpperCase(cur)){
                     if(i == 0) {
                         System.out.println("Error!");
                         return;
                     }
                     //정상적인 대문자인 경우
                     else{
-                        sb.append("_").append(String.valueOf(cur).toLowerCase());
+                        sb.append("_").append(Character.toLowerCase(cur));
                     }
                 }
-
                 //정상적인 소문자인 경우
-                if(type >= 32 && type <= 57) sb.append(cur);
+                if(Character.isLowerCase(cur)) sb.append(cur);
             }
         }
         System.out.println(sb);
