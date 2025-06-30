@@ -1,56 +1,53 @@
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Scanner;
 
 public class Main {
-    static class Edge {
-        int to, id, cost;
-
-        Edge(int to, int id, int cost) {
-            this.to = to;
-            this.id = id;
-            this.cost = cost;
-        }
-    }
-
-    static List<Edge>[] graph = new List[502];
-    static List<Edge>[] reverseGraph = new List[502];
-    static boolean[] isRemovedEdge = new boolean[10002];
+    static List<Edge>[] arr = new List[502];
+    static List<Edge>[] revArr = new List[502];
+    static boolean[] visited = new boolean[10002];
     static int[] distance = new int[502];
-
-    static int n, m, start, end;
+    static int n,m,start, end;
     static final int INF = Integer.MAX_VALUE;
     static PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
-    static Queue<Integer> queue = new LinkedList<>();
+    static Queue<Integer> q = new LinkedList<>();
+
 
     public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(System.in);
         StringBuilder sb = new StringBuilder();
 
-        while (true) {
+        while(true){
             n = sc.nextInt();
             m = sc.nextInt();
-            if (n == 0 && m == 0) break;
+            if(n == 0 && m == 0) break;
 
-            for (int i = 0; i < n; i++) {
-                if (graph[i] == null) graph[i] = new ArrayList<>();
-                if (reverseGraph[i] == null) reverseGraph[i] = new ArrayList<>();
-                graph[i].clear();
-                reverseGraph[i].clear();
+            for(int i = 0; i < n; i++){
+                if(arr[i] == null) arr[i] = new ArrayList<>();
+                if(revArr[i] == null) revArr[i] = new ArrayList<>();
+                arr[i].clear();
+                revArr[i].clear();
             }
 
-            Arrays.fill(isRemovedEdge, 0, m, false);
+            Arrays.fill(visited, 0, m, false);
             Arrays.fill(distance, 0, n, INF);
 
             start = sc.nextInt();
             end = sc.nextInt();
 
-            for (int i = 0; i < m; i++) {
+            for(int i = 0; i < m; i++){
                 int u = sc.nextInt();
                 int v = sc.nextInt();
-                int cost = sc.nextInt();
+                int p = sc.nextInt();
 
-                graph[u].add(new Edge(v, i, cost));
-                reverseGraph[v].add(new Edge(u, i, cost)); // reverse edge
+                arr[u].add(new Edge(v,i,p));
+                revArr[v].add(new Edge(u,i,p));
             }
 
             solve();
@@ -59,28 +56,45 @@ public class Main {
 
             sb.append(distance[end] == INF ? -1 : distance[end]).append("\n");
         }
-
-        System.out.print(sb);
+        System.out.println(sb.toString());
     }
 
-    static void solve() {
+    private static void trace() {
+        q.clear();
+        q.offer(end);
+        while(!q.isEmpty()){
+            int cur = q.poll();
+            for(Edge e : revArr[cur]){
+                if(visited[e.id]) continue;
+
+                int prev = e.to;
+                int d = distance[cur] - e.cost;
+                
+                if(d != distance[prev]) continue;
+
+                visited[e.id] = true;
+                q.offer(prev);
+            }
+        }
+    }
+
+    private static void solve() {
         Arrays.fill(distance, 0, n, INF);
         distance[start] = 0;
         pq.clear();
-        pq.offer(new int[]{0, start});
+        pq.offer(new int[]{0,start});
 
-        while (!pq.isEmpty()) {
+        while(!pq.isEmpty()){
             int[] cur = pq.poll();
-            int curCost = cur[0];
-            int curNode = cur[1];
+            int cost = cur[0];
+            int current = cur[1];
 
-            if (distance[curNode] < curCost) continue;
+            if(distance[current] < cost) continue;
 
-            for (Edge e : graph[curNode]) {
-                if (isRemovedEdge[e.id]) continue;
-
-                int nextCost = curCost + e.cost;
-                if (distance[e.to] <= nextCost) continue;
+            for(Edge e : arr[current]){
+                if(visited[e.id]) continue;
+                int nextCost = cost + e.cost;
+                if(distance[e.to] <= nextCost) continue;
 
                 distance[e.to] = nextCost;
                 pq.offer(new int[]{nextCost, e.to});
@@ -88,24 +102,15 @@ public class Main {
         }
     }
 
-    static void trace() {
-        queue.clear();
-        queue.offer(end);
+    static class Edge{
+        int to;
+        int id;
+        int cost;
 
-        while (!queue.isEmpty()) {
-            int cur = queue.poll();
-
-            for (Edge e : reverseGraph[cur]) {
-                if (isRemovedEdge[e.id]) continue;
-
-                int prev = e.to;
-                int expected = distance[cur] - e.cost;
-
-                if (distance[prev] != expected) continue;
-
-                isRemovedEdge[e.id] = true;
-                queue.offer(prev);
-            }
+        public Edge(int to, int id, int cost) {
+            this.to = to;
+            this.id = id;
+            this.cost = cost;
         }
     }
 }
