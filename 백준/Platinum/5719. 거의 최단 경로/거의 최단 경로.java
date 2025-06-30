@@ -69,7 +69,7 @@ public class Main {
 
                 int prev = e.to;
                 int d = distance[cur] - e.cost;
-                
+
                 if(d != distance[prev]) continue;
 
                 visited[e.id] = true;
