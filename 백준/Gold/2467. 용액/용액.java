@@ -12,25 +12,16 @@ public class Main{
 
         long min = Long.MAX_VALUE;
         int ml = 0, mr = 0;
-        for(int i = 0; i < n-1; i++){
-            int left = i+1;
-            int right = n-1;
-            while(left <= right){
-                int mid = (left + right)/2;
-                long sum = Math.abs(arr[i] + arr[mid]);
-                if(min > sum){
-                    min = sum;
-                    ml = i;
-                    mr = mid;
-                }
-
-                if(arr[mid] >= -arr[i]){
-                    right = mid -1;
-                }
-                else{
-                    left = mid + 1;
-                }
+        int left = 0, right = n-1;
+        while(left < right){
+            long sum = arr[left] + arr[right];
+            if(Math.abs(sum) < min){
+                min = Math.abs(sum);
+                ml = left;
+                mr = right;
             }
+            if(sum >= 0) right--;
+            else left++;
         }
         System.out.println(arr[ml] + " " + arr[mr]);
     }
